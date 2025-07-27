@@ -13,6 +13,6 @@ type Mode string
 
 const (
 	Latency   Mode = "latency"
-	Error     Mode = "error"
+	Response  Mode = "response"
 	ErrorRate Mode = "error-rate"
 )

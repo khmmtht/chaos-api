@@ -1,39 +1,29 @@
 package adapter
 
 import (
+	_interface "chaos-api/adapter/interface"
 	"chaos-api/domain"
 	"encoding/json"
 	"os"
 )
 
-type ChaosAdapter interface {
-	CreateChaosConfig(c *domain.ChaosConfig) error
-	GetChaosConfig(token string, service string) (*domain.ChaosConfig, error)
-	ResetConfig(token string, service string) error
-}
-
 type FileChaosAdapter struct {
 	Path string
 }
 
-func NewFileChaosAdapter() ChaosAdapter {
+func NewFileChaosAdapter() _interface.ChaosAdapter {
 	return FileChaosAdapter{
-		Path: "/data",
+		Path: "./data",
 	}
 }
 
-func (a FileChaosAdapter) CreateChaosConfig(c *domain.ChaosConfig) error {
+func (a FileChaosAdapter) UpsertChaosConfig(c *domain.ChaosConfig) error {
 	jsonData, err := json.Marshal(c)
 	if err != nil {
 		return err
 	}
 
 	filePath := a.Path + "/" + c.Token + "_" + c.ServiceName + ".json"
-	err = os.Truncate(filePath, 0)
-	if err != nil {
-		return err
-	}
-
 	err = os.WriteFile(filePath, jsonData, 0644)
 	if err != nil {
 		return err
@@ -60,7 +50,7 @@ func (a FileChaosAdapter) GetChaosConfig(token string, service string) (*domain.
 
 func (a FileChaosAdapter) ResetConfig(token string, service string) error {
 	filePath := a.Path + "/" + token + "_" + service + ".json"
-	err := os.Truncate(filePath, 0)
+	err := os.WriteFile(filePath, []byte(""), 0644)
 	if err != nil {
 		return err
 	}

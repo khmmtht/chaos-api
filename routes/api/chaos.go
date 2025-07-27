@@ -14,5 +14,5 @@ func AddChaosRoutes(e *echo.Group) {
 	g.GET("/status/:service", chaosHandler.ChaosStatus)
 	g.POST("/configure", chaosHandler.ChaosConfigure)
 	g.POST("/trigger/:service", chaosHandler.ChaosTrigger)
-	g.POST("/reset", chaosHandler.ChaosReset)
+	g.POST("/reset/:service", chaosHandler.ChaosReset)
 }

@@ -1,18 +1,19 @@
 package handler
 
 import (
-	"chaos-api/adapter"
+	_interface "chaos-api/adapter/interface"
 	"chaos-api/domain"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type ChaosHandler struct {
-	adapter adapter.ChaosAdapter
+	adapter _interface.ChaosAdapter
 }
 
-func NewChaosHandler(adapter adapter.ChaosAdapter) *ChaosHandler {
+func NewChaosHandler(adapter _interface.ChaosAdapter) *ChaosHandler {
 	return &ChaosHandler{
 		adapter: adapter,
 	}
@@ -43,9 +44,9 @@ func (h *ChaosHandler) ChaosConfigure(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	err := h.adapter.CreateChaosConfig(config)
+	err := h.adapter.UpsertChaosConfig(config)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Something went wrong")
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	return c.String(http.StatusCreated, "Created Chaos Config")
@@ -65,8 +66,15 @@ func (h *ChaosHandler) ChaosTrigger(c echo.Context) error {
 
 	switch config.Mode {
 	case domain.Latency:
-		return c.JSON(http.StatusOK, config)
-	case domain.Error:
+		delay, err := strconv.Atoi(config.Value)
+		if err != nil {
+			return err
+		}
+
+		time.Sleep(time.Duration(delay) * time.Millisecond)
+
+		return c.JSON(http.StatusOK, config.Response)
+	case domain.Response:
 		code, err := strconv.Atoi(config.Value)
 		if err != nil {
 			return err
@@ -74,7 +82,7 @@ func (h *ChaosHandler) ChaosTrigger(c echo.Context) error {
 
 		return c.String(code, config.Response)
 	default:
-		return c.JSON(http.StatusBadRequest, "Invalid Chaos Mode")
+		return c.JSON(http.StatusInternalServerError, "Invalid Chaos Mode")
 	}
 }
 
