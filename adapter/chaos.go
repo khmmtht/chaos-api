@@ -23,7 +23,7 @@ func (a FileChaosAdapter) UpsertChaosConfig(c *domain.ChaosConfig) error {
 		return err
 	}
 
-	filePath := a.Path + "/" + c.Token + "_" + c.ServiceName + ".json"
+	filePath := a.Path + "/" + c.ProjectId + "_" + c.ServiceName + ".json"
 	err = os.WriteFile(filePath, jsonData, 0644)
 	if err != nil {
 		return err

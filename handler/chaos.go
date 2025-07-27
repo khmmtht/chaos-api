@@ -25,9 +25,9 @@ type ChaosTriggerRequest struct {
 }
 
 func (h *ChaosHandler) ChaosStatus(c echo.Context) error {
-	t := c.Request().Header.Get("api-token")
+	t := c.Request().Header.Get("project-id")
 	if len(t) == 0 {
-		return c.JSON(http.StatusBadRequest, "Api Token required")
+		return c.JSON(http.StatusBadRequest, "Api ProjectId required")
 	}
 
 	config, err := h.adapter.GetChaosConfig(t, c.Param("service"))
@@ -53,9 +53,9 @@ func (h *ChaosHandler) ChaosConfigure(c echo.Context) error {
 }
 
 func (h *ChaosHandler) ChaosTrigger(c echo.Context) error {
-	t := c.Request().Header.Get("api-token")
+	t := c.Request().Header.Get("project-id")
 	if len(t) == 0 {
-		return c.JSON(http.StatusBadRequest, "Api Token required")
+		return c.JSON(http.StatusBadRequest, "Api ProjectId required")
 	}
 
 	// Main logic
@@ -87,9 +87,9 @@ func (h *ChaosHandler) ChaosTrigger(c echo.Context) error {
 }
 
 func (h *ChaosHandler) ChaosReset(c echo.Context) error {
-	t := c.Request().Header.Get("api-token")
+	t := c.Request().Header.Get("project-id")
 	if len(t) == 0 {
-		return c.JSON(http.StatusBadRequest, "Api Token required")
+		return c.JSON(http.StatusBadRequest, "Api ProjectId required")
 	}
 
 	err := h.adapter.ResetConfig(t, c.Param("service"))
