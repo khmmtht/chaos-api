@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"os"
 	"time"
 )
 
@@ -16,8 +17,8 @@ type MongoDbChaosConfigAdapter struct {
 }
 
 func NewMongoDbChaosConfigAdapter() _interface.ChaosConfigAdapter {
-	//uri := os.Getenv("MONGODB_URI")
-	client, _ := mongo.Connect(options.Client().ApplyURI("mongodb://root:example@localhost:27017"))
+	uri := os.Getenv("MONGODB_URI")
+	client, _ := mongo.Connect(options.Client().ApplyURI(uri))
 
 	return &MongoDbChaosConfigAdapter{
 		client.Database("chaos").Collection("config"),
