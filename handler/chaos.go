@@ -19,9 +19,11 @@ func NewChaosHandler(adapter _interface.ChaosAdapter) *ChaosHandler {
 	}
 }
 
-type ChaosTriggerRequest struct {
-	UserId      string `json:"user_id"`
-	ServiceName string `json:"service_name"`
+type ChaosConfigRequest struct {
+	ServiceName string      `json:"service_name"`
+	Mode        domain.Mode `json:"mode"`
+	Value       string      `json:"value"`
+	Response    string      `json:"response"`
 }
 
 func (h *ChaosHandler) ChaosStatus(c echo.Context) error {
@@ -30,7 +32,7 @@ func (h *ChaosHandler) ChaosStatus(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Api ProjectId required")
 	}
 
-	config, err := h.adapter.GetChaosConfig(t, c.Param("service"))
+	config, err := h.adapter.GetChaosConfigByService(t, c.Param("service"))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Something went wrong")
 	}
@@ -59,7 +61,7 @@ func (h *ChaosHandler) ChaosTrigger(c echo.Context) error {
 	}
 
 	// Main logic
-	config, err := h.adapter.GetChaosConfig(t, c.Param("service"))
+	config, err := h.adapter.GetChaosConfigByService(t, c.Param("service"))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Something went wrong")
 	}

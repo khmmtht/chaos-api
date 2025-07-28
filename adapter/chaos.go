@@ -23,7 +23,7 @@ func (a FileChaosAdapter) UpsertChaosConfig(c *domain.ChaosConfig) error {
 		return err
 	}
 
-	filePath := a.Path + "/" + c.ProjectId + "_" + c.ServiceName + ".json"
+	filePath := a.Path + "/" + c.ProjectId + "_" + c.Name + ".json"
 	err = os.WriteFile(filePath, jsonData, 0644)
 	if err != nil {
 		return err
@@ -32,8 +32,13 @@ func (a FileChaosAdapter) UpsertChaosConfig(c *domain.ChaosConfig) error {
 	return nil
 }
 
-func (a FileChaosAdapter) GetChaosConfig(token string, service string) (*domain.ChaosConfig, error) {
-	filePath := a.Path + "/" + token + "_" + service + ".json"
+func (a FileChaosAdapter) GetChaosConfigByProjectId(projectId string) (*domain.ChaosConfig, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a FileChaosAdapter) GetChaosConfigByService(projectId string, service string) (*domain.ChaosConfig, error) {
+	filePath := a.Path + "/" + projectId + "_" + service + ".json"
 	jsonData, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
