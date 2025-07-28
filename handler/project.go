@@ -19,7 +19,13 @@ func NewProject(projectAdapter _interface.ProjectAdapter, tokenAdapter _interfac
 }
 
 func (p *ProjectHandler) NewProject(c echo.Context) error {
-	result, err := p.ProjectAdapter.CreateProject(c.FormValue("name"))
+	var data map[string]interface{}
+	err := c.Bind(&data)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	result, err := p.ProjectAdapter.CreateProject(data["name"].(string))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -28,7 +34,12 @@ func (p *ProjectHandler) NewProject(c echo.Context) error {
 }
 
 func (p *ProjectHandler) UpdateProject(c echo.Context) error {
-	err := p.ProjectAdapter.UpdateProject(c.FormValue("project-id"), c.FormValue("name"))
+	var data map[string]interface{}
+	err := c.Bind(&data)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	err = p.ProjectAdapter.UpdateProject(data["project-id"].(string), data["name"].(string))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -38,7 +49,12 @@ func (p *ProjectHandler) UpdateProject(c echo.Context) error {
 
 func (p *ProjectHandler) RemoveProject(c echo.Context) error {
 	// TODO: Remove cascade
-	err := p.ProjectAdapter.DeleteProject(c.FormValue("project-id"))
+	var data map[string]interface{}
+	err := c.Bind(&data)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	err = p.ProjectAdapter.DeleteProject(data["project-id"].(string))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -47,7 +63,12 @@ func (p *ProjectHandler) RemoveProject(c echo.Context) error {
 }
 
 func (p *ProjectHandler) GenApiKey(c echo.Context) error {
-	result, err := p.TokenAdapter.GenerateToken(c.FormValue("project-id"), c.FormValue("name"))
+	var data map[string]interface{}
+	err := c.Bind(&data)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	result, err := p.TokenAdapter.GenerateToken(data["project-id"].(string), data["name"].(string))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
