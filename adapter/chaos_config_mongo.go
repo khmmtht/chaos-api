@@ -29,7 +29,7 @@ func (a *MongoDbChaosConfigAdapter) UpsertChaosConfig(c *domain.ChaosConfig) err
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	r, err := a.Collection.UpdateOne(ctx, bson.M{"project_id": c.ProjectId}, bson.M{"$set": c})
+	r, err := a.Collection.UpdateOne(ctx, bson.M{"project_id": c.ProjectId, "name": c.Name}, bson.M{"$set": c})
 	if err != nil {
 		return err
 	}
