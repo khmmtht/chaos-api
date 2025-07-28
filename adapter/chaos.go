@@ -18,12 +18,19 @@ func NewFileChaosAdapter() _interface.ChaosAdapter {
 }
 
 func (a FileChaosAdapter) UpsertChaosConfig(c *domain.ChaosConfig) error {
+	configs, err := a.GetChaosConfigByProjectId(c.ProjectId)
+	for i, config := range configs {
+		if config.Name == c.Name {
+			configs[i] = *c
+		}
+	}
+
 	jsonData, err := json.Marshal(c)
 	if err != nil {
 		return err
 	}
 
-	filePath := a.Path + "/" + c.ProjectId + "_" + c.Name + ".json"
+	filePath := a.Path + "/" + c.ProjectId + ".json"
 	err = os.WriteFile(filePath, jsonData, 0644)
 	if err != nil {
 		return err
@@ -32,29 +39,39 @@ func (a FileChaosAdapter) UpsertChaosConfig(c *domain.ChaosConfig) error {
 	return nil
 }
 
-func (a FileChaosAdapter) GetChaosConfigByProjectId(projectId string) (*domain.ChaosConfig, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a FileChaosAdapter) GetChaosConfigByService(projectId string, service string) (*domain.ChaosConfig, error) {
-	filePath := a.Path + "/" + projectId + "_" + service + ".json"
+func (a FileChaosAdapter) GetChaosConfigByProjectId(projectId string) ([]domain.ChaosConfig, error) {
+	filePath := a.Path + "/" + projectId + ".json"
 	jsonData, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
 
-	var config domain.ChaosConfig
-	err = json.Unmarshal(jsonData, &config)
+	var configs []domain.ChaosConfig
+	err = json.Unmarshal(jsonData, &configs)
 	if err != nil {
 		return nil, err
 	}
 
-	return &config, nil
+	return configs, nil
+}
+
+func (a FileChaosAdapter) GetChaosConfigByService(projectId string, service string) (*domain.ChaosConfig, error) {
+	configs, err := a.GetChaosConfigByProjectId(projectId)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, config := range configs {
+		if config.Name == service {
+			return &config, nil
+		}
+	}
+
+	return nil, nil
 }
 
 func (a FileChaosAdapter) ResetConfig(token string, service string) error {
-	filePath := a.Path + "/" + token + "_" + service + ".json"
+	filePath := a.Path + "/" + token + ".json"
 	err := os.WriteFile(filePath, []byte(""), 0644)
 	if err != nil {
 		return err
