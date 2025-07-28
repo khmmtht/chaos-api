@@ -5,6 +5,7 @@ import (
 	"chaos-api/domain"
 	"encoding/json"
 	"os"
+	"slices"
 )
 
 type FileChaosAdapter struct {
@@ -70,9 +71,19 @@ func (a FileChaosAdapter) GetChaosConfigByService(projectId string, service stri
 	return nil, nil
 }
 
-func (a FileChaosAdapter) ResetConfig(token string, service string) error {
-	filePath := a.Path + "/" + token + ".json"
-	err := os.WriteFile(filePath, []byte(""), 0644)
+func (a FileChaosAdapter) ResetConfig(projectId string, service string) error {
+	configs, err := a.GetChaosConfigByProjectId(projectId)
+	configs = slices.DeleteFunc(configs, func(c domain.ChaosConfig) bool {
+		return c.Name == service
+	})
+
+	jsonData, err := json.Marshal(configs)
+	if err != nil {
+		return err
+	}
+
+	filePath := a.Path + "/" + projectId + ".json"
+	err = os.WriteFile(filePath, jsonData, 0644)
 	if err != nil {
 		return err
 	}
