@@ -74,14 +74,14 @@ func (h *ChaosHandler) ChaosTrigger(c echo.Context) error {
 	// Main logic
 	config, err := h.adapter.GetChaosConfigByService(t, c.Param("service"))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Something went wrong")
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	switch config.Mode {
 	case domain.Latency:
 		delay, err := strconv.Atoi(config.Value)
 		if err != nil {
-			return err
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 
 		time.Sleep(time.Duration(delay) * time.Millisecond)
@@ -90,7 +90,7 @@ func (h *ChaosHandler) ChaosTrigger(c echo.Context) error {
 	case domain.Response:
 		code, err := strconv.Atoi(config.Value)
 		if err != nil {
-			return err
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 
 		return c.String(code, config.Response)
