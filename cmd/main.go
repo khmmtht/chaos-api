@@ -37,5 +37,5 @@ func main() {
 	api.AddGlobalRoutes(g)
 	api.AddSimulateRoutes(g)
 
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 }
