@@ -39,7 +39,7 @@ func (p *ProjectHandler) UpdateProject(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	err = p.ProjectAdapter.UpdateProject(data["project-id"].(string), data["name"].(string))
+	err = p.ProjectAdapter.UpdateProject(data["project_id"].(string), data["name"].(string))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -54,7 +54,7 @@ func (p *ProjectHandler) RemoveProject(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	err = p.ProjectAdapter.DeleteProject(data["project-id"].(string))
+	err = p.ProjectAdapter.DeleteProject(data["project_id"].(string))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -68,7 +68,7 @@ func (p *ProjectHandler) GenApiKey(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	result, err := p.TokenAdapter.GenerateToken(data["project-id"].(string), data["name"].(string))
+	result, err := p.TokenAdapter.GenerateToken(data["project_id"].(string), data["name"].(string))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
