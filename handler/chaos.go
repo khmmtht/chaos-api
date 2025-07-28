@@ -34,7 +34,7 @@ func (h *ChaosHandler) ChaosStatus(c echo.Context) error {
 
 	config, err := h.adapter.GetChaosConfigByService(t, c.Param("service"))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Something went wrong")
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, config)
