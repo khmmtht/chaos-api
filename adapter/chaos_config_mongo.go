@@ -4,6 +4,7 @@ import (
 	_interface "chaos-api/adapter/interface"
 	"chaos-api/domain"
 	"context"
+	"errors"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -47,6 +48,10 @@ func (a *MongoDbChaosConfigAdapter) GetChaosConfigByProjectId(projectId string) 
 	defer cancel()
 
 	find, err := a.Collection.Find(ctx, bson.M{"project_id": projectId})
+	if errors.Is(err, mongo.ErrNoDocuments) {
+		return []domain.ChaosConfig{}, nil
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -66,6 +71,10 @@ func (a *MongoDbChaosConfigAdapter) GetChaosConfigByService(projectId string, se
 
 	var config domain.ChaosConfig
 	err := a.Collection.FindOne(ctx, bson.M{"project_id": projectId, "name": service}).Decode(&config)
+	if errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, nil
+	}
+
 	if err != nil {
 		return nil, err
 	}
