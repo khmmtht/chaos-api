@@ -8,17 +8,17 @@ import (
 	"slices"
 )
 
-type FileChaosAdapter struct {
+type FileChaosConfigAdapter struct {
 	Path string
 }
 
-func NewFileChaosAdapter() _interface.ChaosAdapter {
-	return FileChaosAdapter{
+func NewFileChaosConfigAdapter() _interface.ChaosConfigAdapter {
+	return FileChaosConfigAdapter{
 		Path: "./data",
 	}
 }
 
-func (a FileChaosAdapter) UpsertChaosConfig(c *domain.ChaosConfig) error {
+func (a FileChaosConfigAdapter) UpsertChaosConfig(c *domain.ChaosConfig) error {
 	configs, err := a.GetChaosConfigByProjectId(c.ProjectId)
 	for i, config := range configs {
 		if config.Name == c.Name {
@@ -40,7 +40,7 @@ func (a FileChaosAdapter) UpsertChaosConfig(c *domain.ChaosConfig) error {
 	return nil
 }
 
-func (a FileChaosAdapter) GetChaosConfigByProjectId(projectId string) ([]domain.ChaosConfig, error) {
+func (a FileChaosConfigAdapter) GetChaosConfigByProjectId(projectId string) ([]domain.ChaosConfig, error) {
 	filePath := a.Path + "/" + projectId + ".json"
 	jsonData, err := os.ReadFile(filePath)
 	if err != nil {
@@ -56,7 +56,7 @@ func (a FileChaosAdapter) GetChaosConfigByProjectId(projectId string) ([]domain.
 	return configs, nil
 }
 
-func (a FileChaosAdapter) GetChaosConfigByService(projectId string, service string) (*domain.ChaosConfig, error) {
+func (a FileChaosConfigAdapter) GetChaosConfigByService(projectId string, service string) (*domain.ChaosConfig, error) {
 	configs, err := a.GetChaosConfigByProjectId(projectId)
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func (a FileChaosAdapter) GetChaosConfigByService(projectId string, service stri
 	return nil, nil
 }
 
-func (a FileChaosAdapter) ResetConfig(projectId string, service string) error {
+func (a FileChaosConfigAdapter) ResetConfig(projectId string, service string) error {
 	configs, err := a.GetChaosConfigByProjectId(projectId)
 	configs = slices.DeleteFunc(configs, func(c domain.ChaosConfig) bool {
 		return c.Name == service

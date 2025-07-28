@@ -8,7 +8,7 @@ import (
 )
 
 func AddChaosRoutes(e *echo.Group) {
-	chaosHandler := handler.NewChaosHandler(adapter.NewMongoDbConfigAdapter())
+	chaosHandler := handler.NewChaosHandler(adapter.NewMongoDbChaosConfigAdapter())
 
 	g := e.Group("/" + _const.ApiVersion + "/chaos")
 	g.GET("/status/:service", chaosHandler.ChaosStatus)

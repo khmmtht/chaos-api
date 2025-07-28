@@ -10,10 +10,10 @@ import (
 )
 
 type ChaosHandler struct {
-	adapter _interface.ChaosAdapter
+	adapter _interface.ChaosConfigAdapter
 }
 
-func NewChaosHandler(adapter _interface.ChaosAdapter) *ChaosHandler {
+func NewChaosHandler(adapter _interface.ChaosConfigAdapter) *ChaosHandler {
 	return &ChaosHandler{
 		adapter: adapter,
 	}

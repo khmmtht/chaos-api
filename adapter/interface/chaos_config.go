@@ -2,7 +2,7 @@ package _interface
 
 import "chaos-api/domain"
 
-type ChaosAdapter interface {
+type ChaosConfigAdapter interface {
 	UpsertChaosConfig(c *domain.ChaosConfig) error
 	GetChaosConfigByProjectId(projectId string) ([]domain.ChaosConfig, error)
 	GetChaosConfigByService(projectId string, service string) (*domain.ChaosConfig, error)

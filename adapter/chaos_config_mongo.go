@@ -10,20 +10,20 @@ import (
 	"time"
 )
 
-type MongoDbConfigAdapter struct {
+type MongoDbChaosConfigAdapter struct {
 	Collection *mongo.Collection
 }
 
-func NewMongoDbConfigAdapter() _interface.ChaosAdapter {
+func NewMongoDbChaosConfigAdapter() _interface.ChaosConfigAdapter {
 	//uri := os.Getenv("MONGODB_URI")
 	client, _ := mongo.Connect(options.Client().ApplyURI("mongodb://root:example@localhost:27017"))
 
-	return &MongoDbConfigAdapter{
+	return &MongoDbChaosConfigAdapter{
 		client.Database("chaos").Collection("config"),
 	}
 }
 
-func (a *MongoDbConfigAdapter) UpsertChaosConfig(c *domain.ChaosConfig) error {
+func (a *MongoDbChaosConfigAdapter) UpsertChaosConfig(c *domain.ChaosConfig) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -42,7 +42,7 @@ func (a *MongoDbConfigAdapter) UpsertChaosConfig(c *domain.ChaosConfig) error {
 	return nil
 }
 
-func (a *MongoDbConfigAdapter) GetChaosConfigByProjectId(projectId string) ([]domain.ChaosConfig, error) {
+func (a *MongoDbChaosConfigAdapter) GetChaosConfigByProjectId(projectId string) ([]domain.ChaosConfig, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -60,7 +60,7 @@ func (a *MongoDbConfigAdapter) GetChaosConfigByProjectId(projectId string) ([]do
 	return configs, nil
 }
 
-func (a *MongoDbConfigAdapter) GetChaosConfigByService(projectId string, service string) (*domain.ChaosConfig, error) {
+func (a *MongoDbChaosConfigAdapter) GetChaosConfigByService(projectId string, service string) (*domain.ChaosConfig, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -73,7 +73,7 @@ func (a *MongoDbConfigAdapter) GetChaosConfigByService(projectId string, service
 	return &config, nil
 }
 
-func (a *MongoDbConfigAdapter) ResetConfig(projectId string, service string) error {
+func (a *MongoDbChaosConfigAdapter) ResetConfig(projectId string, service string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
