@@ -13,9 +13,11 @@ import (
 )
 
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	if os.Getenv("ENVIRONMENT") == "DEV" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
 	}
 
 	e := echo.New()
@@ -26,7 +28,7 @@ func main() {
 	uri := os.Getenv("MONGODB_URI")
 	client, _ := mongo.Connect(options.Client().ApplyURI(uri))
 	defer func() {
-		if err = client.Disconnect(context.Background()); err != nil {
+		if err := client.Disconnect(context.Background()); err != nil {
 			panic(err)
 		}
 	}()
@@ -37,5 +39,5 @@ func main() {
 	api.AddGlobalRoutes(g)
 	api.AddSimulateRoutes(g)
 
-	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
+	e.Logger.Fatal(e.Start(":8080"))
 }
