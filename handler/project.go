@@ -11,8 +11,11 @@ type ProjectHandler struct {
 	TokenAdapter   _interface.TokenAdapter
 }
 
-func NewProject() *ProjectHandler {
-	return &ProjectHandler{}
+func NewProject(projectAdapter _interface.ProjectAdapter, tokenAdapter _interface.TokenAdapter) *ProjectHandler {
+	return &ProjectHandler{
+		ProjectAdapter: projectAdapter,
+		TokenAdapter:   tokenAdapter,
+	}
 }
 
 func (p *ProjectHandler) NewProject(c echo.Context) error {
