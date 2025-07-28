@@ -20,10 +20,10 @@ func NewChaosHandler(adapter _interface.ChaosConfigAdapter) *ChaosHandler {
 }
 
 type ChaosConfigRequest struct {
-	ServiceName string      `json:"service_name"`
-	Mode        domain.Mode `json:"mode"`
-	Value       string      `json:"value"`
-	Response    string      `json:"response"`
+	Name     string      `json:"name"`
+	Mode     domain.Mode `json:"mode"`
+	Value    string      `json:"value"`
+	Response string      `json:"response"`
 }
 
 func (h *ChaosHandler) ChaosStatus(c echo.Context) error {
@@ -41,12 +41,23 @@ func (h *ChaosHandler) ChaosStatus(c echo.Context) error {
 }
 
 func (h *ChaosHandler) ChaosConfigure(c echo.Context) error {
-	config := new(domain.ChaosConfig)
+	t := c.Request().Header.Get("project-id")
+	if len(t) == 0 {
+		return c.JSON(http.StatusBadRequest, "Api ProjectId required")
+	}
+
+	config := new(ChaosConfigRequest)
 	if err := c.Bind(config); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	err := h.adapter.UpsertChaosConfig(config)
+	err := h.adapter.UpsertChaosConfig(&domain.ChaosConfig{
+		ProjectId: t,
+		Name:      config.Name,
+		Mode:      config.Mode,
+		Value:     config.Value,
+		Response:  config.Response,
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
