@@ -10,9 +10,9 @@ import (
 func AddSimulateRoutes(e *echo.Group) {
 	g := e.Group("/" + _const.ApiVersion + "/simulate")
 
-	mets := []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions, http.MethodTrace, http.MethodConnect, http.MethodHead}
+	methods := []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions, http.MethodTrace, http.MethodConnect, http.MethodHead}
 
-	for _, met := range mets {
+	for _, met := range methods {
 		g.Add(met, "/delay/:ms", handler.SimulateDelay)
 		g.Add(met, "/error/:code", handler.SimulateError)
 	}

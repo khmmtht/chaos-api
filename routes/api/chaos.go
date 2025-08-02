@@ -11,9 +11,9 @@ import (
 
 func AddChaosRoutes(e *echo.Group, client *mongo.Client) {
 	chaosHandler := handler.NewChaosHandler(adapter.NewMongoDbChaosConfigAdapter(client))
-	middleware := middleware.NewProjectTokenMiddleware(adapter.NewMongoDbTokenAdapter(client))
+	tokenMiddleware := middleware.NewProjectTokenMiddleware(adapter.NewMongoDbTokenAdapter(client))
 
-	g := e.Group("/"+_const.ApiVersion+"/chaos", middleware.Handler())
+	g := e.Group("/"+_const.ApiVersion+"/chaos", tokenMiddleware.Handler())
 	g.GET("/status/:service", chaosHandler.ChaosStatus)
 	g.POST("/configure", chaosHandler.ChaosConfigure)
 	g.POST("/trigger/:service", chaosHandler.ChaosTrigger)

@@ -9,12 +9,12 @@ import (
 )
 
 func AddProjectRoutes(e *echo.Group, client *mongo.Client) {
-	handler := handler.NewProject(adapter.NewMongoDbProjectAdapter(client), adapter.NewMongoDbTokenAdapter(client))
+	projectHandler := handler.NewProject(adapter.NewMongoDbProjectAdapter(client), adapter.NewMongoDbTokenAdapter(client))
 
 	g := e.Group("/" + _const.ApiVersion + "/admin/project")
 
-	g.POST("", handler.NewProject)
-	g.PATCH("", handler.UpdateProject)
-	g.DELETE("", handler.RemoveProject)
-	g.POST("/token", handler.GenApiKey)
+	g.POST("", projectHandler.NewProject)
+	g.PATCH("", projectHandler.UpdateProject)
+	g.DELETE("", projectHandler.RemoveProject)
+	g.POST("/token", projectHandler.GenApiKey)
 }
