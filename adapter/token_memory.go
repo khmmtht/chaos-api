@@ -65,7 +65,7 @@ func (a *MemoryTokenAdapter) GenerateToken(projectId, name string) (*domain.Toke
 	}
 	tokens, err := a.GetTokensByProjectId(projectId)
 	if err != nil {
-		return nil, err
+		tokens = make([]domain.Token, 0)
 	}
 
 	tokens = append(tokens, result)

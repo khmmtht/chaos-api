@@ -13,14 +13,17 @@ import (
 
 func AddChaosRoutes(e *echo.Group, client *mongo.Client) {
 	var configAdapter _interface.ChaosConfigAdapter
+	var tokenAdapter _interface.TokenAdapter
 	if os.Getenv("DRIVER") == "mongodb" {
 		configAdapter = adapter.NewMongoDbChaosConfigAdapter(client)
+		tokenAdapter = adapter.NewMongoDbTokenAdapter(client)
 	} else {
 		configAdapter = adapter.NewMemoryChaosConfigAdapter()
+		tokenAdapter = adapter.NewMemoryTokenAdapter()
 	}
 
 	chaosHandler := handler.NewChaosHandler(configAdapter)
-	tokenMiddleware := middleware.NewProjectTokenMiddleware(adapter.NewMongoDbTokenAdapter(client))
+	tokenMiddleware := middleware.NewProjectTokenMiddleware(tokenAdapter)
 
 	g := e.Group("/"+_const.ApiVersion+"/chaos", tokenMiddleware.Handler())
 	g.GET("/status/:service", chaosHandler.ChaosStatus)
