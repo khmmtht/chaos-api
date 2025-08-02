@@ -37,7 +37,7 @@ func main() {
 	g := e.Group("api")
 	store := sync.Map{}
 	api.AddChaosRoutes(g, &store, client)
-	api.AddProjectRoutes(g, &store, client)
+	//api.AddProjectRoutes(g, &store, client)
 	api.AddGlobalRoutes(g)
 	api.AddSimulateRoutes(g)
 
