@@ -9,13 +9,19 @@ import (
 )
 
 type MemoryProjectAdapter struct {
-	Store *sync.Map
+	Store  *sync.Map
+	prefix string
 }
 
 func NewMemoryProjectAdapter(store *sync.Map) _interface.ProjectAdapter {
 	return &MemoryProjectAdapter{
-		Store: store,
+		Store:  store,
+		prefix: "project_",
 	}
+}
+
+func (a *MemoryProjectAdapter) generateKey(key string) string {
+	return a.prefix + key
 }
 
 func (a *MemoryProjectAdapter) GetProjects() ([]domain.Project, error) {
@@ -38,25 +44,25 @@ func (a *MemoryProjectAdapter) CreateProject(name string) (*domain.Project, erro
 		Id:   id.String(),
 		Name: name,
 	}
-	a.Store.Store(id.String(), project)
+	a.Store.Store(a.generateKey(id.String()), project)
 
 	return &project, nil
 }
 
 func (a *MemoryProjectAdapter) UpdateProject(projectId, name string) error {
-	val, ok := a.Store.Load(projectId)
+	val, ok := a.Store.Load(a.generateKey(projectId))
 	if !ok {
 		return errors.New("project not found")
 	}
 
 	project := val.(domain.Project)
 	project.Name = name
-	a.Store.Store(projectId, project)
+	a.Store.Store(a.generateKey(projectId), project)
 
 	return nil
 }
 
 func (a *MemoryProjectAdapter) DeleteProject(projectId string) error {
-	a.Store.Delete(projectId)
+	a.Store.Delete(a.generateKey(projectId))
 	return nil
 }

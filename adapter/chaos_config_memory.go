@@ -8,21 +8,23 @@ import (
 )
 
 type MemoryChaosConfigAdapter struct {
-	Store *sync.Map
+	Store  *sync.Map
+	prefix string
 }
 
 func NewMemoryChaosConfigAdapter(store *sync.Map) _interface.ChaosConfigAdapter {
 	return &MemoryChaosConfigAdapter{
-		Store: store,
+		Store:  store,
+		prefix: "chaos_config_",
 	}
 }
 
-func generateKey(projectId, name string) string {
+func (a *MemoryChaosConfigAdapter) generateKey(projectId, name string) string {
 	return projectId + "_" + name
 }
 
 func (a *MemoryChaosConfigAdapter) UpsertChaosConfig(c *domain.ChaosConfig) error {
-	a.Store.Store(generateKey(c.ProjectId, c.Name), c)
+	a.Store.Store(a.generateKey(c.ProjectId, c.Name), c)
 
 	return nil
 }
@@ -44,7 +46,7 @@ func (a *MemoryChaosConfigAdapter) GetChaosConfigByProjectId(projectId string) (
 }
 
 func (a *MemoryChaosConfigAdapter) GetChaosConfigByService(projectId string, service string) (*domain.ChaosConfig, error) {
-	result, ok := a.Store.Load(generateKey(projectId, service))
+	result, ok := a.Store.Load(a.generateKey(projectId, service))
 	if !ok {
 		return nil, errors.New("key does not exist")
 	}
@@ -54,6 +56,6 @@ func (a *MemoryChaosConfigAdapter) GetChaosConfigByService(projectId string, ser
 }
 
 func (a *MemoryChaosConfigAdapter) ResetConfig(projectId string, service string) error {
-	a.Store.Delete(generateKey(projectId, service))
+	a.Store.Delete(a.generateKey(projectId, service))
 	return nil
 }

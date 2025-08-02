@@ -9,28 +9,40 @@ import (
 )
 
 type MemoryTokenAdapter struct {
-	Store *sync.Map
+	Store  *sync.Map
+	prefix string
 }
 
 func NewMemoryTokenAdapter(store *sync.Map) _interface.TokenAdapter {
 	return &MemoryTokenAdapter{
-		Store: store,
+		Store:  store,
+		prefix: "token_",
 	}
 }
 
+func (a *MemoryTokenAdapter) generateKey(key string) string {
+	return a.prefix + key
+}
+
 func (a *MemoryTokenAdapter) Count(projectId, token string) (int64, error) {
-	result, ok := a.Store.Load(projectId)
+	result, ok := a.Store.Load(a.generateKey(projectId))
 	if !ok {
 		return 0, errors.New("key does not exist")
 	}
 
-	return int64(len(result.([]domain.Token))), nil
+	for _, t := range result.([]domain.Token) {
+		if t.Value == token {
+			return 1, nil
+		}
+	}
+
+	return 0, nil
 }
 
 func (a *MemoryTokenAdapter) GetTokens() ([]domain.Token, error) {
 	tokens := make([]domain.Token, 0)
 	a.Store.Range(func(key, value interface{}) bool {
-		tokens = append(tokens, value.(domain.Token))
+		tokens = append(tokens, value.([]domain.Token)...)
 		return true
 	})
 
@@ -38,7 +50,7 @@ func (a *MemoryTokenAdapter) GetTokens() ([]domain.Token, error) {
 }
 
 func (a *MemoryTokenAdapter) GetTokensByProjectId(projectId string) ([]domain.Token, error) {
-	result, ok := a.Store.Load(projectId)
+	result, ok := a.Store.Load(a.generateKey(projectId))
 	if !ok {
 		return make([]domain.Token, 0), errors.New("key does not exist")
 	}
@@ -69,7 +81,7 @@ func (a *MemoryTokenAdapter) GenerateToken(projectId, name string) (*domain.Toke
 	}
 
 	tokens = append(tokens, result)
-	a.Store.Store(projectId, tokens)
+	a.Store.Store(a.generateKey(projectId), tokens)
 
 	return &result, nil
 }
