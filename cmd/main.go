@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"log"
 	"os"
+	"sync"
 )
 
 func main() {
@@ -34,8 +35,9 @@ func main() {
 	}()
 
 	g := e.Group("api")
-	api.AddChaosRoutes(g, client)
-	api.AddProjectRoutes(g, client)
+	store := sync.Map{}
+	api.AddChaosRoutes(g, &store, client)
+	api.AddProjectRoutes(g, &store, client)
 	api.AddGlobalRoutes(g)
 	api.AddSimulateRoutes(g)
 

@@ -9,12 +9,12 @@ import (
 )
 
 type MemoryProjectAdapter struct {
-	Store sync.Map
+	Store *sync.Map
 }
 
-func NewMemoryProjectAdapter() _interface.ProjectAdapter {
+func NewMemoryProjectAdapter(store *sync.Map) _interface.ProjectAdapter {
 	return &MemoryProjectAdapter{
-		Store: sync.Map{},
+		Store: store,
 	}
 }
 

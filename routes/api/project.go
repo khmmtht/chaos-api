@@ -8,17 +8,18 @@ import (
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"os"
+	"sync"
 )
 
-func AddProjectRoutes(e *echo.Group, client *mongo.Client) {
+func AddProjectRoutes(e *echo.Group, store *sync.Map, client *mongo.Client) {
 	var projectAdapter _interface.ProjectAdapter
 	var tokenAdapter _interface.TokenAdapter
 	if os.Getenv("DRIVER") == "mongodb" {
 		projectAdapter = adapter.NewMongoDbProjectAdapter(client)
 		tokenAdapter = adapter.NewMongoDbTokenAdapter(client)
 	} else {
-		projectAdapter = adapter.NewMemoryProjectAdapter()
-		tokenAdapter = adapter.NewMemoryTokenAdapter()
+		projectAdapter = adapter.NewMemoryProjectAdapter(store)
+		tokenAdapter = adapter.NewMemoryTokenAdapter(store)
 	}
 
 	projectHandler := handler.NewProject(projectAdapter, tokenAdapter)

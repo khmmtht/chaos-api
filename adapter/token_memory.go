@@ -9,12 +9,12 @@ import (
 )
 
 type MemoryTokenAdapter struct {
-	Store sync.Map
+	Store *sync.Map
 }
 
-func NewMemoryTokenAdapter() _interface.TokenAdapter {
+func NewMemoryTokenAdapter(store *sync.Map) _interface.TokenAdapter {
 	return &MemoryTokenAdapter{
-		Store: sync.Map{},
+		Store: store,
 	}
 }
 

@@ -9,17 +9,18 @@ import (
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"os"
+	"sync"
 )
 
-func AddChaosRoutes(e *echo.Group, client *mongo.Client) {
+func AddChaosRoutes(e *echo.Group, store *sync.Map, client *mongo.Client) {
 	var configAdapter _interface.ChaosConfigAdapter
 	var tokenAdapter _interface.TokenAdapter
 	if os.Getenv("DRIVER") == "mongodb" {
 		configAdapter = adapter.NewMongoDbChaosConfigAdapter(client)
 		tokenAdapter = adapter.NewMongoDbTokenAdapter(client)
 	} else {
-		configAdapter = adapter.NewMemoryChaosConfigAdapter()
-		tokenAdapter = adapter.NewMemoryTokenAdapter()
+		configAdapter = adapter.NewMemoryChaosConfigAdapter(store)
+		tokenAdapter = adapter.NewMemoryTokenAdapter(store)
 	}
 
 	chaosHandler := handler.NewChaosHandler(configAdapter)

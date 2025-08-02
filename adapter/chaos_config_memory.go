@@ -8,12 +8,12 @@ import (
 )
 
 type MemoryChaosConfigAdapter struct {
-	Store sync.Map
+	Store *sync.Map
 }
 
-func NewMemoryChaosConfigAdapter() _interface.ChaosConfigAdapter {
+func NewMemoryChaosConfigAdapter(store *sync.Map) _interface.ChaosConfigAdapter {
 	return &MemoryChaosConfigAdapter{
-		Store: sync.Map{},
+		Store: store,
 	}
 }
 
