@@ -51,8 +51,8 @@ func (a *MemoryChaosConfigAdapter) GetChaosConfigByService(projectId string, ser
 		return nil, errors.New("key does not exist")
 	}
 
-	config := result.(domain.ChaosConfig)
-	return &config, nil
+	config := result.(*domain.ChaosConfig)
+	return config, nil
 }
 
 func (a *MemoryChaosConfigAdapter) ResetConfig(projectId string, service string) error {
