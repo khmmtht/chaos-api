@@ -1,4 +1,4 @@
-package Middleware
+package middleware
 
 import (
 	_interface "chaos-api/adapter/interface"
